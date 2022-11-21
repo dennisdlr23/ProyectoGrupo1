@@ -31,11 +31,16 @@ public class PlayerController : MonoBehaviour
     public float slideVelocity;
     public float slopeForceDown;
 
+    //variables animacion
+    public Animator playerAnimatorController;
+
     // Start is called before the first frame update
     void Start()
     {
         //Movimiento
         player = GetComponent<CharacterController>();
+        playerAnimatorController = GetComponent<Animator>();
+
     }
 
     // Update is called once per frame
@@ -47,6 +52,8 @@ public class PlayerController : MonoBehaviour
 
         playerInput = new Vector3(horizontalMove, 0, verticalMove);
         playerInput = Vector3.ClampMagnitude(playerInput, 1);
+
+        playerAnimatorController.SetFloat("PlayerWalkVelocity",  playerInput.magnitude * playerSpeed);
 
         //Mover camara con el jugador
         camDirection();
@@ -88,6 +95,7 @@ public class PlayerController : MonoBehaviour
         {
             fallVelocity = jumpForce;
             movePlayer.y = fallVelocity;
+            playerAnimatorController.SetTrigger("PlayerJump");
         }
     }
 
@@ -103,7 +111,9 @@ public class PlayerController : MonoBehaviour
         {
             fallVelocity -= gravity * Time.deltaTime;
             movePlayer.y = fallVelocity;
+            playerAnimatorController.SetFloat("PlayerVerticalVelocity", player.velocity.y);
         }
+        playerAnimatorController.SetBool("isGrounded", player.isGrounded); //----No la esta tomando--------
         SlideDown();
     }
 
@@ -125,5 +135,22 @@ public class PlayerController : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         hitNormal = hit.normal;
+    }
+    //agregadas 
+    private void OnTriggerStay(Collider other) {
+        if(other.tag == "MovingPlatform")
+        {
+            Debug.Log("UNA PLATAFORMA!");
+            player.transform.SetParent (other.transform);
+        }
+    }
+    private void OnTriggerExit(Collider other) {
+        if(other.tag == "MovingPlatform")
+        {            
+            player.transform.SetParent (null);
+        }
+    }
+    private void OnAnimatorMove() {
+        
     }
 }
