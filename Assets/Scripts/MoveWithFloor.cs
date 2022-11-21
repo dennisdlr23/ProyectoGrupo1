@@ -11,7 +11,8 @@ public class MoveWithFloor : MonoBehaviour
     Vector3 lastGroundPosition; //Almacenamos la ultima posicion conocida del suelo
     string groundName;          //Almacenamos el nombre actual del suelo
     string lastGroundName;      //Almacenamos el nombre del ultimo suelo conocido
-    //GameObject groundIn;
+    GameObject groundIn;
+    LayerMask finalmask;
 
     //LayerMask finalmask;
     Quaternion actualRot; 
@@ -24,9 +25,9 @@ public class MoveWithFloor : MonoBehaviour
     void Start()
     {
         player = this.GetComponent<CharacterController>(); //Inicializamos la variable player almacenando el componente CharacterController
-        // var layer1 = 9;
-        // var layer2 = 12;
-        // finalmask = ~((1 << layer1) | (1 << layer2));
+        var layer1 = 9;
+        var layer2 = 12;
+        finalmask = ~((1 << layer1) | (1 << layer2));
     }
 
     // Update is called once per frame
@@ -40,16 +41,16 @@ public class MoveWithFloor : MonoBehaviour
                GameObject groundedIn = hit.collider.gameObject;
                 groundName = groundedIn.name;         //despues comprobamos el nombre del suelo              
                 groundPosition = groundedIn.transform.position; //Una vez que tenemos el GameObject localizado, almacenamos su posicion
-                  //groundIn = hit.collider.gameObject; //Comprobmamos cual es el suelo actual y almacenamos su GameObject en una variable temporal
+                groundIn = hit.collider.gameObject; //Comprobmamos cual es el suelo actual y almacenamos su GameObject en una variable temporal
                 actualRot = groundedIn.transform.rotation;
 
 
                 if ((groundPosition != lastGroundPosition) && (groundName == lastGroundName)) //Si su posicion es distinta de la ultima posicion conocida y el nombre sigue siendo el mismo
                 {
                     this.transform.position += groundPosition - lastGroundPosition; //Sumamos a nuestra posicion la diferencia entre la posicion actual del suelo y la ultimam posicion conocida del suelo.
-                    // player.enabled = false;
-                    // player.transform.position = this.transform.position;
-                    // player.enabled = true;
+                    player.enabled = false;
+                    player.transform.position = this.transform.position;
+                    player.enabled = true;
                 }
                 lastGroundName = groundName;
                 lastGroundPosition = groundPosition;
